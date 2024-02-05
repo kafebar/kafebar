@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 )
@@ -18,6 +19,13 @@ func main() {
 		mux.Handle("/", http.FileServer(http.Dir(uiPath)))
 	}
 
+	mux.HandleFunc("/status", func(w http.ResponseWriter, req *http.Request) {
+		fmt.Fprintf(w, "OK")
+	})
+
 	addr := fmt.Sprintf(":%s", port)
-	http.ListenAndServe(addr, mux)
+	err := http.ListenAndServe(addr, mux)
+	if err != nil {
+		log.Fatalf("cannot start server: %s", err.Error())
+	}
 }
