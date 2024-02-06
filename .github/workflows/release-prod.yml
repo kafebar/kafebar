@@ -1,0 +1,48 @@
+name: Release kafebar - PROD
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build and publish image
+    runs-on: ubuntu-latest
+    environment: prod
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - id: "auth"
+        uses: "google-github-actions/auth@v0"
+        with:
+          credentials_json: "${{ secrets.GOOGLE_CREDENTIALS }}"
+
+      - name: Login to the artifact registry
+        shell: bash
+        run: |-
+          gcloud --quiet auth configure-docker ${{ vars.SERVICE_LOCATION }}-docker.pkg.dev
+
+      - name: Build and push container image to registry
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          tags:  ${{ vars.SERVICE_LOCATION }}-docker.pkg.dev/${{vars.GOOGLE_PROJECT_ID}}/main/${{vars.SERVICE_NAME}}:${{ github.sha }}
+
+  deploy:
+    needs: [build]
+    name: Deploy image to cloud run job
+    runs-on: ubuntu-latest
+    environment: prod
+    steps:
+      - id: "auth"
+        uses: "google-github-actions/auth@v0"
+        with:
+          credentials_json: "${{ secrets.GOOGLE_CREDENTIALS }}"
+      - id: deploy
+        uses: google-github-actions/deploy-cloudrun@v0
+        with:
+          service: ${{ vars.SERVICE_NAME }}
+          image:  ${{ vars.SERVICE_LOCATION }}-docker.pkg.dev/${{vars.GOOGLE_PROJECT_ID}}/main/${{vars.SERVICE_NAME}}:${{ github.sha }}
+          region: ${{ vars.SERVICE_LOCATION }}
+
