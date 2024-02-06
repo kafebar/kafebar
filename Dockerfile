@@ -6,7 +6,7 @@ RUN go mod download
 
 COPY api/src src
 
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o main src/main.go
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o main src/cmd/main.go
 
 ## Build ui
 FROM node:20-slim as client
