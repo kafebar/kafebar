@@ -1,19 +1,19 @@
 <script setup lang="ts" generic="T extends any, O extends any">
+import { useUserStore } from '~/stores/userStore'
+
 defineOptions({
   name: 'IndexPage',
 })
-
+const userStore = useUserStore()
 // const name = ref('')
-
+const test = userStore.test
 // const router = useRouter()
-
-const hi = () => {
-  console.log('hi')
-}
 </script>
 
 <template>
-  <div @click="hi()">
-   hi
+  <div>
+    hi
+    {{ test }}
+    hi
   </div>
 </template>
