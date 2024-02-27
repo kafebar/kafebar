@@ -1,0 +1,8 @@
+{
+    "go.testEnvFile": "${workspaceFolder}/api/.env",
+    "go.testTimeout": "1000s",
+    "cSpell.words": [
+        "firestore",
+        "kafebar"
+    ]
+}
