@@ -10,6 +10,9 @@ import (
 var (
 	port   = os.Getenv("PORT")
 	uiPath = os.Getenv("UI_PATH")
+
+	tlsKeyFile  = os.Getenv("TLS_KEY_FILE")
+	tlsCertFile = os.Getenv("TLS_CERT_FILE")
 )
 
 func main() {
@@ -24,7 +27,14 @@ func main() {
 	})
 
 	addr := fmt.Sprintf(":%s", port)
-	err := http.ListenAndServe(addr, mux)
+
+	var err error
+	if tlsCertFile != "" {
+		err = http.ListenAndServeTLS(addr, tlsCertFile, tlsKeyFile, mux)
+	} else {
+		err = http.ListenAndServe(addr, mux)
+	}
+
 	if err != nil {
 		log.Fatalf("cannot start server: %s", err.Error())
 	}
