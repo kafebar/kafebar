@@ -28,6 +28,8 @@ func main() {
 
 	addr := fmt.Sprintf(":%s", port)
 
+	fmt.Printf("starting server on %s\n", addr)
+
 	var err error
 	if tlsCertFile != "" {
 		err = http.ListenAndServeTLS(addr, tlsCertFile, tlsKeyFile, mux)
