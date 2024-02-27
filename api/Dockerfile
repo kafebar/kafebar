@@ -6,7 +6,7 @@ RUN go mod download
 
 COPY src src
 
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o main work/cmd/server/main.go
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o main src/cmd/main.go
 
 ## Deploy
 FROM alpine:3.15
