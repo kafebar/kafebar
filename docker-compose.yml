@@ -1,0 +1,46 @@
+version: "3.4"
+
+services:
+  server:
+    network_mode: host
+    build: api
+    env_file: api/.env
+    environment:
+      FRONTEND_LOCATION: http://localhost:5173
+    depends_on:
+      postgres:
+        condition: service_healthy
+  client:
+    network_mode: host
+    build:
+      context: u/home/jakubc/repos/ustron-work/clienti
+      dockerfile: dev.Dockerfile
+    volumes:
+      - ./ui/src:/ui/src
+  postgres:
+    network_mode: host
+    image: postgres:15.4
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: work-test
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./db/test_data.sql:/docker-entrypoint-initdb.d/test_data.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 2s
+      timeout: 5s
+      retries: 5
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    network_mode: host
+    volumes:
+      - ./db/pgadmin.json:/pgadmin4/servers.json
+    environment:
+      PGADMIN_LISTEN_PORT: 4140
+      PGADMIN_DEFAULT_EMAIL: pgadmin@pgadmin.com
+      PGADMIN_DEFAULT_PASSWORD: pgadmin
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"

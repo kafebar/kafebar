@@ -1,6 +1,11 @@
+<script setup lang="ts">
+
+</script>
+
 <template>
-  <main font-sans p="x-4 y-10" text="center gray-700 dark:gray-200">
+  <div class="relative max-w-sm mx-auto">
     <RouterView />
-    <TheFooter />
-  </main>
+    <div class="h-48"></div>
+    
+  </div>
 </template>

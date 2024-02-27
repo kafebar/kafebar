@@ -45,4 +45,3 @@ jobs:
           service: ${{ vars.SERVICE_NAME }}
           image:  ${{ vars.SERVICE_LOCATION }}-docker.pkg.dev/${{vars.GOOGLE_PROJECT_ID}}/main/${{vars.SERVICE_NAME}}:${{ github.sha }}
           region: ${{ vars.SERVICE_LOCATION }}
-
