@@ -18,8 +18,8 @@ func New(os kafebar.OrderService, es kafebar.EventsService) http.Handler {
 
 	h := &handler{os, es}
 
-	mux.HandleFunc("GET /orders", h.getOrders)
-	mux.HandleFunc("POST /orders", h.createOrder)
+	mux.HandleFunc("GET /api/orders", h.getOrders)
+	mux.HandleFunc("POST /api/orders", h.createOrder)
 
 	return mux
 }

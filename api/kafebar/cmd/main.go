@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/kafebar/kafebar/api/kafebar/frontend"
 	"github.com/kafebar/kafebar/api/kafebar/orderhandler"
 	"github.com/kafebar/kafebar/api/kafebar/producthandler"
 	"github.com/kafebar/kafebar/api/kafebar/sqlite"
@@ -47,16 +48,16 @@ func main() {
 	productHandler := producthandler.New(products, serverEvents)
 	orderHandler := orderhandler.New(orders, serverEvents)
 
-	mux.Handle("/events", serverEvents)
+	mux.Handle("/api/events", serverEvents)
 
-	mux.Handle("/orders", orderHandler)
-	mux.Handle("/orders/", orderHandler)
+	mux.Handle("/api/orders", orderHandler)
+	mux.Handle("/api/orders/", orderHandler)
 
-	mux.Handle("/products", productHandler)
-	mux.Handle("/products/", productHandler)
+	mux.Handle("/api/products", productHandler)
+	mux.Handle("/api/products/", productHandler)
 
 	if uiPath != "" {
-		mux.Handle("/", http.FileServer(http.Dir(uiPath)))
+		mux.Handle("/", frontend.NewHandler(uiPath))
 	}
 
 	addr := fmt.Sprintf(":%s", port)

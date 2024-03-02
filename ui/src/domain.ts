@@ -13,5 +13,17 @@ export type Product = {
 
 export type Order = {
     id: number
-    name: number
+    name: string
+    status: Status
+    items: OrderItem[]
 }
+
+export type OrderItem = {
+    id: number
+    orderId: number
+    productId: number
+    status: Status
+    options: string[]
+}
+
+export type Status = "Todo" | "InProgress" | "Done" | "Archived"

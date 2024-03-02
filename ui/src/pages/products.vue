@@ -1,10 +1,10 @@
 <template>
-    <div class="max-w-screen-lg mx-auto p-4">
+    <div>
         <div class="flex justify-between">
             <h1 class="text-2xl mb-4">Products</h1>
             <button @click="creatingProduct = true">New Product</button>
         </div>
-        <div class="grid grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <ProductTile v-for="product of products" :product="product" @click="editedProduct = product" />
         </div>
     </div>

@@ -8,6 +8,6 @@ body{
     color: white;
 }
 
-input {
-    @apply w-full p-2 bg-gray-900 rounded-md
+input:not([type='checkbox']) {
+    @apply w-full p-2 bg-gray-800 rounded-md
 }

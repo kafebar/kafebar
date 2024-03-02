@@ -7,17 +7,21 @@ API_DIR=$SCRIPT_DIR/../api
 UI_DIR=$SCRIPT_DIR/../ui
 
 rm -rf $DIST_DIR
+mkdir -p $DIST_DIR
 
-CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o $DIST_DIR/main $API_DIR/src/cmd/main.go
+cd $API_DIR
+CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -o $DIST_DIR/main ./kafebar/cmd/main.go
 
 cd $UI_DIR
 pnpm install
-pnpm build
+pnpm build-prod
 
 cp -r $UI_DIR/dist $DIST_DIR/ui
 cp $SCRIPT_DIR/../prod.env $DIST_DIR/.env
+cp $SCRIPT_DIR/../db/migrations -r $DIST_DIR/migrations
 
-ssh jakub12134@34.0.246.58 'sudo killall main && rm -rf /home/jakub12134/dist'
+ssh jakub12134@34.0.246.58 'sudo killall main'
+ssh jakub12134@34.0.246.58 'rm -rf /home/jakub12134/dist'
 
 scp -pr $DIST_DIR/ jakub12134@34.0.246.58:/home/jakub12134/dist
 
@@ -26,6 +30,8 @@ ssh jakub12134@34.0.246.58  'sudo \
     UI_PATH=./dist/ui \
     TLS_KEY_FILE=/etc/letsencrypt/live/kafebar.pl/privkey.pem \
     TLS_CERT_FILE=/etc/letsencrypt/live/kafebar.pl/fullchain.pem \
+    MIGRATIONS_DIRECTORY=/home/jakub12134/dist/migrations \
+    SQLITE_LOCATION=/home/jakub12134/sqlite.db \
     ./dist/main \
     </dev/null \
     >kafebar.log \

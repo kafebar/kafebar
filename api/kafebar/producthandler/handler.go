@@ -19,10 +19,10 @@ func New(ps kafebar.ProductService, es kafebar.EventsService) http.Handler {
 
 	h := &handler{ps, es}
 
-	mux.HandleFunc("GET /products", h.getProducts)
-	mux.HandleFunc("POST /products", h.createProduct)
-	mux.HandleFunc("PUT /products", h.updateProduct)
-	mux.HandleFunc("DELETE /products/{productId}", h.deleteProduct)
+	mux.HandleFunc("GET /api/products", h.getProducts)
+	mux.HandleFunc("POST /api/products", h.createProduct)
+	mux.HandleFunc("PUT /api/products", h.updateProduct)
+	mux.HandleFunc("DELETE /api/products/{productId}", h.deleteProduct)
 
 	return mux
 }

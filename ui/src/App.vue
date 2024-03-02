@@ -3,14 +3,13 @@
 </script>
 
 <template>
-  <div class="relative">
+  <div class="max-w-screen-lg mx-auto p-4 pb-48">
     <RouterView />
-    <div class="h-48"></div>
-    <div class="fixed flex bottom-0 w-full bg-gray-800">
-      <RouterLink to="/" class="router-link">Counter</RouterLink>
-      <RouterLink to="/orders" class="router-link">Orders</RouterLink>
-      <RouterLink to="/products" class="router-link">Products</RouterLink>
-    </div>
+  </div>
+  <div class="fixed flex bottom-0 w-full bg-gray-800">
+    <RouterLink to="/" class="router-link">Counter</RouterLink>
+    <RouterLink to="/orders" class="router-link">Orders</RouterLink>
+    <RouterLink to="/products" class="router-link">Products</RouterLink>
   </div>
 </template>
 

@@ -1,10 +1,10 @@
 <template>
     <div>
-        <div>
+        <div class="mb-2">
             <p>Name:</p>
             <input v-model="product.name">
         </div>
-        <div>
+        <div class="mb-2">
             <p>Price:</p>
             <input type="number" v-model="product.price">
         </div>
@@ -13,7 +13,7 @@
                 <p>Options:</p>
                 <button @click="product.availableOptions.push('')" class="bg-gray-700 px-2 rounded-full">+</button>
             </div>
-            <div v-for="i of product.availableOptions.length" class="flex gap-2 items-center">
+            <div v-for="i of product.availableOptions.length" class="flex gap-2 items-center mb-2">
                 <input v-model="product.availableOptions[i-1]">
                 <button @click="product.availableOptions.splice(i-1, 1)" class="bg-red-500 px-2 rounded-full">-</button>
             </div>

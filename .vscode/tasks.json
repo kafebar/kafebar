@@ -14,7 +14,13 @@
             "label": "start_server",
             "command": "${workspaceFolder}/scripts/start.sh",
             "problemMatcher": []
-        }
+        },
+
+        {
+            "label": "release",
+            "command": "${workspaceFolder}/scripts/release.sh",
+            "problemMatcher": []
+        },
     ],
     "inputs": [
         {

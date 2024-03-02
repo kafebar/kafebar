@@ -102,7 +102,7 @@ async function handleEvent(ev: EventData) {
 }
 
 
-const apiUrl = 'http://localhost:4003'
+const apiUrl = import.meta.env.VITE_API_BASE_URI
 
 async function createProduct(p: Product):Promise<Product> {
     const res = await fetch(`${apiUrl}/products`, {
