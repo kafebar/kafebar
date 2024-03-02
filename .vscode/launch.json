@@ -9,8 +9,8 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceFolder}/api/src/cmd/main.go",
-            "envFile": "${workspaceFolder}/api/.env"
+            "program": "${workspaceFolder}/api/kafebar/cmd/main.go",
+            "envFile": "${workspaceFolder}/.env"
         }
     ]
 }

@@ -1,0 +1,27 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "migrations_new",
+            "command": "${workspaceFolder}/scripts/migrations_new.sh",
+            "problemMatcher": [],
+            "args": [
+                "${input:migration_name}"
+            ]
+        },
+
+        {
+            "label": "start_server",
+            "command": "${workspaceFolder}/scripts/start.sh",
+            "problemMatcher": []
+        }
+    ],
+    "inputs": [
+        {
+            "id": "migration_name",
+            "description": "Migration name:",
+            "default": "",
+            "type": "promptString"
+        }
+    ]
+}
