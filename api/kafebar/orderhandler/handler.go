@@ -30,7 +30,9 @@ func New(os kafebar.OrderService, es kafebar.EventsService) http.Handler {
 func (h *handler) getOrders(w http.ResponseWriter, req *http.Request) {
 	orders, err := h.os.GetOrders(req.Context())
 	if err != nil {
-		http.Error(w, "cannot get orders", http.StatusInternalServerError)
+		err := fmt.Errorf("cannot get orders: %w", err)
+		fmt.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -42,14 +44,17 @@ func (h *handler) createOrder(w http.ResponseWriter, req *http.Request) {
 
 	err := json.NewDecoder(req.Body).Decode(&order)
 	if err != nil {
-		http.Error(w, "invalid order body: "+err.Error(), http.StatusBadRequest)
+		err := fmt.Errorf("invalid order body: %w", err)
+		fmt.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	createdOrder, err := h.os.CreateOrder(req.Context(), order)
 	if err != nil {
-		fmt.Println("cannot create order: ", err)
-		http.Error(w, "cannot create order", http.StatusInternalServerError)
+		err := fmt.Errorf("cannot create order: %w", err)
+		fmt.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -64,8 +69,9 @@ func (h *handler) createOrder(w http.ResponseWriter, req *http.Request) {
 func (h *handler) updateOrderItemStatus(w http.ResponseWriter, req *http.Request) {
 	orderItemId, err := strconv.Atoi(req.PathValue("orderItemId"))
 	if err != nil {
-		fmt.Println("invalid path parameter: ", err)
-		http.Error(w, "invalid path parameter", http.StatusBadRequest)
+		err := fmt.Errorf("invalid path parameter: %w", err)
+		fmt.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -73,22 +79,25 @@ func (h *handler) updateOrderItemStatus(w http.ResponseWriter, req *http.Request
 
 	orderItem, err := h.os.GetOrderItem(req.Context(), orderItemId)
 	if err != nil {
-		fmt.Println("cannot get order item: ", err)
-		http.Error(w, "cannot get order item", http.StatusInternalServerError)
+		err := fmt.Errorf("cannot get order item: %w", err)
+		fmt.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	err = h.os.UpdateOrderItemStatus(req.Context(), orderItemId, status)
 	if err != nil {
-		fmt.Println("cannot update order item status: ", err)
-		http.Error(w, "cannot update order item status", http.StatusInternalServerError)
+		err := fmt.Errorf("cannot update order item status: %w", err)
+		fmt.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	order, err := h.os.GetOrder(req.Context(), orderItem.OrderId)
 	if err != nil {
-		fmt.Println("cannot get order: ", err)
-		http.Error(w, "cannot get order", http.StatusInternalServerError)
+		err := fmt.Errorf("cannot get order: %w", err)
+		fmt.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -101,8 +110,9 @@ func (h *handler) updateOrderItemStatus(w http.ResponseWriter, req *http.Request
 func (h *handler) UpdateOrderArchiveStatus(w http.ResponseWriter, req *http.Request) {
 	orderId, err := strconv.Atoi(req.PathValue("orderId"))
 	if err != nil {
-		fmt.Println("invalid path parameter: ", err)
-		http.Error(w, "invalid path parameter", http.StatusBadRequest)
+		err := fmt.Errorf("invalid path parameter: %w", err)
+		fmt.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -110,15 +120,18 @@ func (h *handler) UpdateOrderArchiveStatus(w http.ResponseWriter, req *http.Requ
 
 	err = h.os.UpdateOrderArchiveStatus(req.Context(), orderId, isArchived)
 	if err != nil {
-		fmt.Println("cannot update order archive status: ", err)
-		http.Error(w, "cannot update order archive status", http.StatusInternalServerError)
+
+		err := fmt.Errorf("cannot update order archive status: %w", err)
+		fmt.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	order, err := h.os.GetOrder(req.Context(), orderId)
 	if err != nil {
-		fmt.Println("cannot get order: ", err)
-		http.Error(w, "cannot get order", http.StatusInternalServerError)
+		err := fmt.Errorf("cannot get order: %w", err)
+		fmt.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 

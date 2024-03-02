@@ -30,8 +30,10 @@ func New(ps kafebar.ProductService, es kafebar.EventsService) http.Handler {
 func (h *handler) getProducts(w http.ResponseWriter, req *http.Request) {
 	products, err := h.ps.GetProducts(req.Context())
 	if err != nil {
-		fmt.Println("cannot get products: ", err)
-		http.Error(w, "cannot get products", http.StatusInternalServerError)
+
+		err := fmt.Errorf("cannot get products: %w", err)
+		fmt.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -43,14 +45,18 @@ func (h *handler) createProduct(w http.ResponseWriter, req *http.Request) {
 
 	err := json.NewDecoder(req.Body).Decode(&product)
 	if err != nil {
-		http.Error(w, "invalid product body: "+err.Error(), http.StatusBadRequest)
+
+		err := fmt.Errorf("invalid product body: %w", err)
+		fmt.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	createdProduct, err := h.ps.CreateProduct(req.Context(), product)
 	if err != nil {
-		fmt.Println("cannot create product: ", err)
-		http.Error(w, "cannot create product", http.StatusInternalServerError)
+		err := fmt.Errorf("cannot create product: %w", err)
+		fmt.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -67,14 +73,17 @@ func (h *handler) updateProduct(w http.ResponseWriter, req *http.Request) {
 
 	err := json.NewDecoder(req.Body).Decode(&product)
 	if err != nil {
-		http.Error(w, "invalid product body: "+err.Error(), http.StatusBadRequest)
+		err := fmt.Errorf("invalid product body: %w", err)
+		fmt.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	createdProduct, err := h.ps.UpdateProduct(req.Context(), product)
 	if err != nil {
-		fmt.Println("cannot update product: ", err)
-		http.Error(w, "cannot update product", http.StatusInternalServerError)
+		err := fmt.Errorf("cannot update product: %w", err)
+		fmt.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -89,15 +98,17 @@ func (h *handler) updateProduct(w http.ResponseWriter, req *http.Request) {
 func (h *handler) deleteProduct(w http.ResponseWriter, req *http.Request) {
 	productId, err := strconv.Atoi(req.PathValue("productId"))
 	if err != nil {
-		fmt.Println("invalid product id: ", err)
-		http.Error(w, "invalid product id", http.StatusBadRequest)
-
+		err := fmt.Errorf("invalid product id: %w", err)
+		fmt.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
 	err = h.ps.DeleteProduct(req.Context(), productId)
 	if err != nil {
-		fmt.Println("cannot delete product: ", err)
-		http.Error(w, "cannot delete product", http.StatusInternalServerError)
+		err := fmt.Errorf("cannot delete product: %w", err)
+		fmt.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
