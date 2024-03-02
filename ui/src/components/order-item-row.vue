@@ -2,8 +2,8 @@
     <div v-if="product" class="p-2 bg-gray-800 w-full rounded-md cursor-pointer flex mb-2 justify-between">
         <div>
             <h5 class="text-lg">{{ product.name }}</h5>
-            <div v-if="orderItem.options" class="flex flex-wrap gap-2">
-                <div v-for="option of orderItem.options" class="rounded-md p-1 bg-gray-700">
+            <div v-if="orderItem.options" class="flex flex-wrap gap-1">
+                <div v-for="option of orderItem.options" class="rounded-md px-1 bg-gray-700">
                     {{ option }}
                 </div>
             </div>

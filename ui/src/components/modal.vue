@@ -2,7 +2,7 @@
   <Teleport to="body">
         <Transition name="modal">
             <div v-if="show" class="fixed flex justify-center items-center transition-opacity z-40 top-0 left-0 w-full h-full bg-black bg-opacity-60" @click="$emit('close')">
-                <div class="modal-container max-w-96 w-full mx-4 px-6 py-4 bg-gray-800 rounded-sm shadow-md transition-all" @click.stop>
+                <div class="modal-container max-w-96 w-full mx-4 px-6 py-4 bg-gray-700 rounded-sm shadow-md transition-all" @click.stop>
                     <div class="flex justify-between gap-4 mb-4">
                         <h3 class="text-xl">{{ name }}</h3>
                         <button @click="$emit('close')">X</button>

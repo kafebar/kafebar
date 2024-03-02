@@ -6,7 +6,7 @@
             <input v-model="order.name">
         </div>
 
-        <div v-if="order.items.length">
+        <div v-if="order.items.length" class="mb-4">
             <h3 class="text-xl">Order:</h3>
             <orderItemTable v-model="order.items" class="mb-4"/>
             <div class="flex justify-center gap-4 py-2"> 
