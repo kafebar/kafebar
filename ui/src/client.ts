@@ -1,5 +1,5 @@
 import { ref } from "vue";
-import { EventData, Order, Product } from "./domain";
+import { EventData, Order, Product, Status } from "./domain";
 
 const products = ref<Product[]>([])
 const orders = ref<Order[]>([])
@@ -18,7 +18,9 @@ export function useClient() {
         createProduct,
         updateProduct,
         deleteProduct,
-        createOrder
+        createOrder,
+        updateOrderItemStatus,
+        updateOrderArchiveStatus,
     }
 }
 
@@ -178,4 +180,17 @@ async function getOrders():Promise<Order[]> {
     }
     const products = await res.json()
     return products
+}
+
+async function updateOrderItemStatus(orderItemId: number, status: Status) {
+    await fetch(`${apiUrl}/orders/items/${orderItemId}/status/${status}`, {
+        method: "PUT",
+    })
+}
+
+
+async function updateOrderArchiveStatus(orderId: number, isArchived: boolean) {
+    await fetch(`${apiUrl}/orders/${orderId}/isArchived/${isArchived}`, {
+        method: "PUT",
+    })
 }

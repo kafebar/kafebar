@@ -5,10 +5,10 @@ import (
 )
 
 type Order struct {
-	Id     int         `json:"id"`
-	Name   string      `json:"name"`
-	Status Status      `json:"status"`
-	Items  []OrderItem `json:"items"`
+	Id         int         `json:"id"`
+	Name       string      `json:"name"`
+	IsArchived bool        `json:"isArchived"`
+	Items      []OrderItem `json:"items"`
 }
 
 type Status string
@@ -29,12 +29,13 @@ type OrderItem struct {
 }
 
 type OrderService interface {
+	GetOrder(context.Context, int) (Order, error)
+	GetOrders(context.Context) ([]Order, error)
 	CreateOrder(context.Context, Order) (Order, error)
-	// EditOrder(context.Context, Order) error
+	UpdateOrderArchiveStatus(ctx context.Context, orderId int, isArchived bool) error
 
+	GetOrderItem(context.Context, int) (OrderItem, error)
 	AddOrderItem(context.Context, OrderItem) (OrderItem, error)
 	// RemoveOrderItem(context.Context, int, int) error
-	// EditOrderItem(context.Context, int, OrderItem) error
-
-	GetOrders(context.Context) ([]Order, error)
+	UpdateOrderItemStatus(context.Context, int, Status) error
 }

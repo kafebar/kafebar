@@ -12,8 +12,7 @@ func TestOrderSErvice(t *testing.T) {
 	os := NewOrderService(getTestDb())
 
 	order := kafebar.Order{
-		Name:   "test",
-		Status: kafebar.StatusTodo,
+		Name: "test",
 		Items: []kafebar.OrderItem{
 			{
 				ProductId: 123,

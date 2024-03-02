@@ -14,7 +14,7 @@ export type Product = {
 export type Order = {
     id: number
     name: string
-    status: Status
+    isArchived: boolean
     items: OrderItem[]
 }
 
@@ -26,4 +26,4 @@ export type OrderItem = {
     options: string[]
 }
 
-export type Status = "Todo" | "InProgress" | "Done" | "Archived"
+export type Status = "Todo" | "InProgress" | "Done" 

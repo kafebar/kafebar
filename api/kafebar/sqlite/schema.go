@@ -19,9 +19,10 @@ const (
 	tableProducts         = "products"
 	tableProductOptions   = "product_options"
 
-	columnId     = "id"
-	columnName   = "name"
-	columnStatus = "status"
+	columnId         = "id"
+	columnName       = "name"
+	columnStatus     = "status"
+	columnIsArchived = "is_archived"
 
 	columnOrderId   = "order_id"
 	columnProductId = "product_id"

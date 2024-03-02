@@ -17,9 +17,9 @@ const (
 	EventTypeProductUpdated EventType = "ProductUpdated"
 	EventTypeProductDeleted EventType = "ProductDeleted"
 
-	EventTypeOrderCreated EventType = "ProductCreated"
-	EventTypeOrderUpdated EventType = "ProductUpdated"
-	EventTypeOrderDeleted EventType = "ProductDeleted"
+	EventTypeOrderCreated EventType = "OrderCreated"
+	EventTypeOrderUpdated EventType = "OrderUpdated"
+	EventTypeOrderDeleted EventType = "OrderDeleted"
 )
 
 type EventsService interface {

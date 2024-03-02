@@ -24,8 +24,8 @@ func NewOrderService(db *sql.DB) *OrderService {
 
 func (o *OrderService) CreateOrder(ctx context.Context, order kafebar.Order) (kafebar.Order, error) {
 	res, err := o.builder.Insert(tableOrders).
-		Columns(columnName, columnStatus).
-		Values(order.Name, order.Status).
+		Columns(columnName).
+		Values(order.Name).
 		Exec()
 
 	if err != nil {
@@ -51,63 +51,27 @@ func (o *OrderService) CreateOrder(ctx context.Context, order kafebar.Order) (ka
 }
 
 func (o *OrderService) GetOrder(ctx context.Context, orderId int) (kafebar.Order, error) {
-	orderRow := o.builder.
-		Select(columnId, columnName, columnStatus).
-		From(tableOrders).
-		Where(sq.Eq{columnId: orderId}).
-		QueryRow()
-
-	var order kafebar.Order
-
-	err := orderRow.Scan(&order.Id, &order.Name, &order.Status)
+	orders, err := o.getOrdersPredicate(ctx, sq.Eq{columnId: orderId})
 	if err != nil {
-		return order, fmt.Errorf("cannot get order: %w", err)
+		return kafebar.Order{}, err
+	}
+	if len(orders) < 1 {
+		return kafebar.Order{}, fmt.Errorf("not found")
 	}
 
-	itemRows, err := o.builder.
-		Select(columnId, columnOrderId, columnProductId, columnStatus).
-		From(tableOrderItems).
-		Where(sq.Eq{columnOrderId: orderId}).
-		Query()
+	return orders[0], nil
+}
 
+func (o *OrderService) GetOrderItem(ctx context.Context, orderItemId int) (kafebar.OrderItem, error) {
+	orderItems, err := o.getOrderItemsPredicate(ctx, sq.Eq{columnId: orderItemId})
 	if err != nil {
-		return order, fmt.Errorf("cannot get order_items: %w", err)
+		return kafebar.OrderItem{}, err
+	}
+	if len(orderItems) < 1 {
+		return kafebar.OrderItem{}, fmt.Errorf("not found")
 	}
 
-	for itemRows.Next() {
-		var item kafebar.OrderItem
-		err := itemRows.Scan(&item.Id, &item.OrderId, &item.ProductId, &item.Status)
-		if err != nil {
-			return order, fmt.Errorf("cannot scan order item: %w", err)
-		}
-		order.Items = append(order.Items, item)
-	}
-
-	itemOptionRows, err := o.builder.
-		Select(columnOrderItemId, columnOption).
-		From(tableOrderItemOptions).
-		Where(sq.Eq{columnOrderId: orderId}).
-		Query()
-
-	if err != nil {
-		return order, fmt.Errorf("cannot get order_items: %w", err)
-	}
-
-	for itemOptionRows.Next() {
-		var itemId int
-		var option string
-		err := itemOptionRows.Scan(&itemId, &option)
-		if err != nil {
-			return order, fmt.Errorf("cannot scan order item option: %w", err)
-		}
-		itemIdx := slices.IndexFunc(order.Items, func(i kafebar.OrderItem) bool { return i.Id == itemId })
-		if itemIdx == -1 {
-			return order, fmt.Errorf("found option for non existing item")
-		}
-		order.Items[itemIdx].Options = append(order.Items[itemIdx].Options, option)
-	}
-
-	return order, nil
+	return orderItems[0], nil
 }
 
 func (o *OrderService) EditOrder(ctx context.Context, order kafebar.Order) error {
@@ -153,10 +117,139 @@ func (o *OrderService) RemoveOrderItem(ctx context.Context, orderItemId int) err
 	return nil
 }
 
-func (o *OrderService) EditOrderItem(ctx context.Context, item kafebar.OrderItem) error {
-	return nil
+func (o *OrderService) UpdateOrderItemStatus(ctx context.Context, itemId int, status kafebar.Status) error {
+	_, err := o.builder.Update(tableOrderItems).
+		Set(columnStatus, status).
+		Where(sq.Eq{columnId: itemId}).
+		Exec()
+
+	return err
+}
+
+func (o *OrderService) UpdateOrderArchiveStatus(ctx context.Context, orderId int, isArchived bool) error {
+	_, err := o.builder.Update(tableOrders).
+		Set(columnIsArchived, isArchived).
+		Where(sq.Eq{columnId: orderId}).
+		Exec()
+
+	return err
 }
 
 func (o *OrderService) GetOrders(ctx context.Context) ([]kafebar.Order, error) {
-	return nil, nil
+	return o.getOrdersPredicate(ctx, nil)
+}
+
+func (o *OrderService) getOrdersPredicate(ctx context.Context, predicate any) ([]kafebar.Order, error) {
+	orderRows, err := o.builder.
+		Select(columnId, columnName, columnIsArchived).
+		From(tableOrders).
+		Where(predicate).
+		Query()
+
+	if err != nil {
+		return nil, fmt.Errorf("cannot fetch orders: %w", err)
+	}
+
+	orders := []kafebar.Order{}
+	orderIds := []int{}
+
+	for orderRows.Next() {
+		var order kafebar.Order
+		err := orderRows.Scan(&order.Id, &order.Name, &order.IsArchived)
+		if err != nil {
+			return nil, fmt.Errorf("cannot scan order item option: %w", err)
+		}
+
+		orders = append(orders, order)
+		orderIds = append(orderIds, order.Id)
+	}
+
+	orderItems, err := o.getOrderItemsPredicate(ctx, sq.Eq{columnOrderId: orderIds})
+
+	for _, orderItem := range orderItems {
+		orderIdx := slices.IndexFunc(orders, func(o kafebar.Order) bool { return o.Id == orderItem.OrderId })
+		if orderIdx == -1 {
+			return orders, fmt.Errorf("found option for non existing item")
+		}
+
+		orders[orderIdx].Items = append(orders[orderIdx].Items, orderItem)
+	}
+
+	return orders, nil
+}
+
+func (o *OrderService) getOrderItemsPredicate(ctx context.Context, predicate any) ([]kafebar.OrderItem, error) {
+
+	itemRows, err := o.builder.
+		Select(columnId, columnOrderId, columnProductId, columnStatus).
+		From(tableOrderItems).
+		Where(predicate).
+		Query()
+
+	if err != nil {
+		return nil, fmt.Errorf("cannot get order_items: %w", err)
+	}
+
+	orderItems := []kafebar.OrderItem{}
+	orderItemIds := []int{}
+
+	for itemRows.Next() {
+		var item kafebar.OrderItem
+		err := itemRows.Scan(&item.Id, &item.OrderId, &item.ProductId, &item.Status)
+		if err != nil {
+			return orderItems, fmt.Errorf("cannot scan order item: %w", err)
+		}
+		orderItems = append(orderItems, item)
+		orderItemIds = append(orderItemIds, item.Id)
+	}
+
+	itemOptions, err := o.getOrderItemOptionsPredicate(ctx, sq.Eq{
+		columnOrderItemId: orderItemIds,
+	})
+
+	if err != nil {
+		return nil, fmt.Errorf("cannot get order_item_options: %w", err)
+	}
+
+	for _, itemOption := range itemOptions {
+		itemIdx := slices.IndexFunc(orderItems, func(i kafebar.OrderItem) bool { return i.Id == itemOption.orderItemId })
+		if itemIdx == -1 {
+			return orderItems, fmt.Errorf("found option for non existing item")
+		}
+		orderItems[itemIdx].Options = append(orderItems[itemIdx].Options, itemOption.option)
+	}
+
+	return orderItems, nil
+}
+
+type orderItemOption struct {
+	id          int
+	orderItemId int
+	orderId     int
+	option      string
+}
+
+func (o *OrderService) getOrderItemOptionsPredicate(ctx context.Context, predicate any) ([]orderItemOption, error) {
+	itemOptionRows, err := o.builder.
+		Select(columnId, columnOrderId, columnOrderItemId, columnOption).
+		From(tableOrderItemOptions).
+		Where(predicate).
+		Query()
+
+	if err != nil {
+		return nil, fmt.Errorf("cannot get order_items: %w", err)
+	}
+
+	orderItemOptions := []orderItemOption{}
+
+	for itemOptionRows.Next() {
+		var oiOpt orderItemOption
+		err := itemOptionRows.Scan(&oiOpt.id, &oiOpt.orderId, &oiOpt.orderItemId, &oiOpt.option)
+		if err != nil {
+			return orderItemOptions, fmt.Errorf("cannot scan order item option: %w", err)
+		}
+		orderItemOptions = append(orderItemOptions, oiOpt)
+	}
+
+	return orderItemOptions, nil
 }

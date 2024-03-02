@@ -1,7 +1,7 @@
 CREATE TABLE orders(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT,
-    status TEXT
+    is_archived INTEGER
 );
 
 CREATE TABLE order_items(

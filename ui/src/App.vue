@@ -19,6 +19,6 @@
 }
 
 .router-link.router-link-active {
- @apply bg-red-500
+ @apply bg-gray-900
 }
 </style>
