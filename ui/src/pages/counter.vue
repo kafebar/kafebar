@@ -56,7 +56,7 @@ function emptyOrder(): Order {
     return {
         id: 0,
         name: "",
-        status: 'Todo',
+        isArchived: false,
         items: []
     }
 }
