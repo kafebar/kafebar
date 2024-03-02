@@ -24,8 +24,8 @@ func NewOrderService(db *sql.DB) *OrderService {
 
 func (o *OrderService) CreateOrder(ctx context.Context, order kafebar.Order) (kafebar.Order, error) {
 	res, err := o.builder.Insert(tableOrders).
-		Columns(columnName).
-		Values(order.Name).
+		Columns(columnName, columnIsArchived).
+		Values(order.Name, order.IsArchived).
 		Exec()
 
 	if err != nil {
