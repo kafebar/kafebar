@@ -1,0 +1,35 @@
+version: "3.4"
+
+services:
+  server:
+    build: 
+      context: .
+      args:
+          MODE: development
+    ports:
+      - "4003:4003"
+    env_file: .env
+    environment:
+      POSTGRES_CONNSTRING: "postgres://admin:password@database:5432/kafebar_local?sslmode=disable"
+      PORT: 4003
+  database:
+    image: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: kafebar_local
+
+  pgadmin:
+    image: dpage/pgadmin4
+    ports:
+      - "5125:80"
+    volumes:
+      - ./db/servers.json:/pgadmin4/servers.json
+      - ./db/cloudsql:/cloudsql
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pgadmin@pgadmin.com
+      PGADMIN_DEFAULT_PASSWORD: pgadmin
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"

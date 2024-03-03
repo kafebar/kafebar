@@ -40,8 +40,33 @@ func (s *Service) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 	connUid := s.addConnection(w)
 
+	err := s.sendEvent(req.Context(), w, kafebar.Event{
+		Type: "ConnectionStart",
+		Data: "Connection Opened",
+	})
+
+	if err != nil {
+		err := fmt.Errorf("cannot open connection: %w", err)
+		fmt.Println(err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
 	<-req.Context().Done()
 	s.removeConnection(connUid)
+}
+
+func (s *Service) Broadcast(ctx context.Context, event kafebar.Event) error {
+	s.connMutex.RLock()
+	defer s.connMutex.RUnlock()
+
+	for _, conn := range s.conns {
+		err := s.sendEvent(ctx, conn.writer, event)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (s *Service) addConnection(writer http.ResponseWriter) uuid.UUID {
@@ -65,20 +90,17 @@ func (s *Service) removeConnection(connUid uuid.UUID) {
 	})
 }
 
-func (s *Service) Broadcast(ctx context.Context, event kafebar.Event) error {
-	s.connMutex.RLock()
-	defer s.connMutex.RUnlock()
+func (s *Service) sendEvent(ctx context.Context, w http.ResponseWriter, event kafebar.Event) error {
 
 	eventStr, err := json.Marshal(event)
 	if err != nil {
 		return fmt.Errorf("cannot marshal data: %w", err)
 	}
+
 	sseEvent := fmt.Sprintf("event: message\ndata: %s\n\n", eventStr)
 
-	for _, conn := range s.conns {
-		fmt.Fprint(conn.writer, sseEvent)
-		conn.writer.(http.Flusher).Flush()
-	}
+	fmt.Fprint(w, sseEvent)
+	w.(http.Flusher).Flush()
 
 	return nil
 }

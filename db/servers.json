@@ -1,0 +1,22 @@
+{
+    "Servers": {
+        "1": {
+            "Name": "Kafebar - local",
+            "Group": "Servers",
+            "Port": 5432,
+            "Username": "admin",
+            "Host": "database",
+            "SSLMode": "disable",
+            "MaintenanceDB": "kafebar_local"
+        },
+        "3": {
+            "Name": "Kafebar - prod",
+            "Group": "Servers",
+            "Port": 5432,
+            "Username": "api",
+            "Host": "/cloudsql/kafebar:europe-west4:kafebar",
+            "SSLMode": "disable",
+            "MaintenanceDB": "api"
+        }
+    }
+}
